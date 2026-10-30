@@ -12,3 +12,4 @@ hardening/tools/apache-maven.zip
 *.iml
 .DS_Store
 Thumbs.db
+.claude/settings.local.json
