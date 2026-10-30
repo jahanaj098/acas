@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acas.local/schemas/acas-hermes-ledger-1.schema.json",
+  "title": "ACAS Hermes export history",
+  "type": "object",
+  "required": ["format", "projectId", "exported", "actorKeys", "actorNames"],
+  "properties": {
+    "format": {"const": "acas-hermes-ledger-1"},
+    "projectId": {"type": "string", "minLength": 1},
+    "lastBatchId": {"type": ["string", "null"]},
+    "actorManifestHash": {"type": ["string", "null"]},
+    "contextHash": {"type": ["string", "null"]},
+    "exported": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "actorKeys": {"type": "object", "additionalProperties": {"type": "string"}},
+    "actorNames": {"type": "object", "additionalProperties": {"type": "string"}},
+    "actorOrigins": {"type": "object", "additionalProperties": {"type": "string"}},
+    "actorCredentialHashes": {"type": "object", "additionalProperties": {"type": "string"}},
+    "responseSnapshots": {"type": "object", "additionalProperties": {"type": ["string", "null"]}}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acas.local/schemas/acas-hermes-history-1.schema.json",
+  "title": "ACAS Hermes persisted import history",
+  "type": "object",
+  "required": ["format", "ledger", "credentialIdentities"],
+  "properties": {
+    "format": {"const": "acas-hermes-registry-1"},
+    "objective": {"type": ["string", "null"]},
+    "ledger": {"$ref": "acas-hermes-ledger-1.schema.json"},
+    "credentialIdentities": {"type": "object", "additionalProperties": {"type": "string"}}
+  }
+}

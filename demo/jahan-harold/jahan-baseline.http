@@ -1,0 +1,25 @@
+GET /api/v1/users/jahan/private-profile HTTP/2
+Accept: application/json
+Authorization: Bearer demo_jahan_access
+Cookie: session_id=demo_jahan_sid; access_token=demo_jahan_access; refresh_token=demo_jahan_refresh; csrf_token=demo_jahan_csrf; XSRF-TOKEN=demo_jahan_xsrf; user_id=jahan; tenant_id=demo_jahan_tenant; device_id=demo_jahan_device; _ga=demo_analytics; preferences=lang%3Den; login_state=authenticated; mfa_verified=true
+Host: app.example.test
+Referer: https://app.example.test/dashboard
+User-Agent: ACAS-Offline-Demo/1.0
+X-Access-Token: demo_jahan_extra_token
+X-API-Key: demo_jahan_api
+X-App-Version: 2.4.1
+X-Auth-Token: demo_jahan_auth
+X-Client-ID: demo_jahan_client
+X-CSRF-Token: demo_jahan_csrf
+X-Device-ID: demo_jahan_device
+X-Request-ID: req_jahan_001
+X-Session-ID: demo_jahan_session
+X-Tenant-ID: demo_jahan_tenant
+X-XSRF-TOKEN: demo_jahan_xsrf
+
+
+# SIMULATED RESPONSE
+HTTP/2 200 OK
+Content-Type: application/json
+
+{"userId":"jahan","email":"jahan@example.test","privateNote":"jahan private profile"}

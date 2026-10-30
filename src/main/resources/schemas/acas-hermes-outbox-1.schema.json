@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acas.local/schemas/acas-hermes-outbox-1.schema.json",
+  "title": "ACAS Hermes pending delivery outbox",
+  "type": "object",
+  "required": ["format", "target", "selection", "items"],
+  "properties": {
+    "format": {"const": "acas-hermes-outbox-1"},
+    "target": {"type": "string", "minLength": 1},
+    "selection": {"type": "integer", "minimum": 0, "maximum": 5},
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["folder", "parts", "batch", "history", "identities", "accepted", "committed"],
+        "properties": {
+          "folder": {"enum": ["telegram", "discord", "local"]},
+          "accepted": {"type": "integer", "minimum": 0, "maximum": 128},
+          "committed": {"type": "boolean"},
+          "parts": {
+            "type": "array",
+            "maxItems": 128,
+            "items": {
+              "type": "object",
+              "required": ["name", "size", "sha256"],
+              "properties": {
+                "name": {"type": "string", "pattern": "^[a-zA-Z0-9_-][a-zA-Z0-9._-]*$"},
+                "size": {"type": "integer", "minimum": 0, "maximum": 67108864},
+                "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

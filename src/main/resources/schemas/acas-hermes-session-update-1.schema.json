@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acas.local/schemas/acas-hermes-session-update-1.schema.json",
+  "title": "ACAS Hermes credential-only session update v2",
+  "type": "object",
+  "required": ["format", "schemaVersion", "batchId", "updateId", "projectId", "revisionStreamId", "credentialRevision", "actor", "applicationMode", "verificationNote", "retryPolicy"],
+  "properties": {
+    "format": {"const": "acas-hermes-session-update-1"},
+    "schemaVersion": {"const": 2},
+    "batchId": {"type": "string", "minLength": 1},
+    "updateId": {"type": "string", "minLength": 1},
+    "projectId": {"type": "string", "minLength": 1},
+    "previousBatchId": {"type": ["string", "null"]},
+    "mode": {"const": "session_update"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "revisionStreamId": {"type": "string", "minLength": 1},
+    "credentialRevision": {"type": "integer", "minimum": 1},
+    "applicationMode": {"const": "replace_managed_credentials"},
+    "verificationNote": {"type": "string"},
+    "retryPolicy": {"type": "string"},
+    "actor": {
+      "type": "object",
+      "required": ["actorId", "name", "origin", "currentAuthenticationHeaders", "credentialClassification", "sessionStatus"],
+      "properties": {
+        "actorId": {"type": "string", "minLength": 1},
+        "name": {"type": "string"},
+        "origin": {"type": "string", "pattern": "^https?://"},
+        "currentAuthenticationHeaders": {"type": "array"},
+        "credentialClassification": {"type": "object"},
+        "sessionStatus": {"enum": ["VERIFIED", "EXPIRED", "UNVERIFIED", "UNKNOWN"]}
+      }
+    }
+  }
+}

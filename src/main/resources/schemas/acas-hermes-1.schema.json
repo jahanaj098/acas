@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acas.local/schemas/acas-hermes-1.schema.json",
+  "title": "ACAS Hermes handoff v2",
+  "type": "object",
+  "required": ["format", "schemaVersion", "batchId", "projectId", "authorization", "actors", "resources", "records", "mutationPoints", "mutationPlan", "requestDependencies", "exportHistory"],
+  "properties": {
+    "format": {"const": "acas-hermes-1"},
+    "schemaVersion": {"const": 2},
+    "batchId": {"type": "string", "minLength": 1},
+    "projectId": {"type": "string", "minLength": 1},
+    "previousBatchId": {"type": ["string", "null"]},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "mode": {"enum": ["full", "changes"]},
+    "objective": {"type": "string"},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "actors": {"type": "array", "items": {"$ref": "#/$defs/actor"}},
+    "resources": {"type": "array", "items": {"$ref": "#/$defs/resource"}},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+    "mutationPoints": {"type": "array", "items": {"$ref": "#/$defs/mutationPoint"}},
+    "mutationPlan": {"type": "array", "items": {"$ref": "#/$defs/mutationPlanEntry"}},
+    "requestDependencies": {"type": "array", "items": {"$ref": "#/$defs/requestDependency"}},
+    "exportHistory": {"$ref": "acas-hermes-ledger-1.schema.json"}
+  },
+  "$defs": {
+    "exactOrigin": {"type": "string", "pattern": "^https?://(\\[[0-9a-f:]+\\]|[a-z0-9.-]+)(:[1-9][0-9]{0,4})?$"},
+    "authorization": {
+      "type": "object",
+      "required": ["format", "activeTestingAllowed", "exactOrigins", "allowedMethods", "redirectPolicy", "stateChangePolicy", "reviews", "scopeSource"],
+      "properties": {
+        "format": {"const": "acas-hermes-authorization-1"},
+        "activeTestingAllowed": {"type": "boolean"},
+        "runId": {"type": ["string", "null"]},
+        "exactOrigins": {"type": "array", "items": {"$ref": "#/$defs/exactOrigin"}},
+        "allowedMethods": {"type": "array", "items": {"enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]}},
+        "allowedActions": {"type": "array", "items": {"enum": ["baseline", "cross_actor", "anonymous", "identity_control"]}},
+        "redirectPolicy": {"const": "no_follow"},
+        "stateChangePolicy": {"enum": ["deny", "allow_exact_reviewed_reversible_writes", "allow_reviewed_writes"]},
+        "minimumIntervalMs": {"type": "integer", "minimum": 1},
+        "requestsPerSecond": {"type": "number", "minimum": 0.1},
+        "maxConcurrency": {"type": "integer", "minimum": 1},
+        "bruteForcePolicy": {
+          "type": "object",
+          "properties": {
+            "allowed": {"type": "boolean"},
+            "requestsPerSecond": {"type": "number"},
+            "minimumIntervalMs": {"type": "integer"},
+            "maxConcurrency": {"type": "integer"},
+            "maxAttempts": {"type": "integer"}
+          }
+        },
+        "reviews": {"type": "array", "items": {"$ref": "#/$defs/review"}},
+        "scopeSource": {"const": "explicit_operator_authorization_not_burp_scope"}
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["captureId", "captureActorId", "requestHash", "operationSafety", "approved"],
+      "properties": {
+        "captureId": {"type": "string"},
+        "captureActorId": {"type": "string"},
+        "requestHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "operationSafety": {"$ref": "#/$defs/operationSafety"},
+        "approved": {"type": "boolean"},
+        "capturedAtEpochMs": {"type": "integer", "minimum": 0},
+        "maxAgeSeconds": {"type": "integer", "minimum": 0}
+      }
+    },
+    "operationSafety": {"enum": ["SAFE_READ", "IDEMPOTENT_WRITE", "REVERSIBLE_WRITE", "DESTRUCTIVE", "EXTERNAL_SIDE_EFFECT", "UNKNOWN"]},
+    "actor": {
+      "type": "object",
+      "required": ["actorId", "name", "origin", "currentAuthenticationHeaders", "credentialClassification", "sessionStatus"],
+      "properties": {
+        "actorId": {"type": "string", "minLength": 1},
+        "name": {"type": "string"},
+        "origin": {"$ref": "#/$defs/exactOrigin"},
+        "role": {"type": ["string", "null"]},
+        "currentAuthenticationHeaders": {"type": "array"},
+        "credentialClassification": {"type": "object"},
+        "identityLookupStatus": {"type": "string"},
+        "recognisedAccount": {"type": ["string", "null"]},
+        "sessionStatus": {"enum": ["VERIFIED", "EXPIRED", "UNVERIFIED", "UNKNOWN"]}
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["resourceRef", "type", "origin", "path", "ownerActorId", "ownershipBasis", "confirmedByOperator", "accessPolicy", "activeTestingAllowed", "sourceEvidenceRecordIds", "mutationPointIds"],
+      "properties": {
+        "resourceRef": {"type": "string", "minLength": 1},
+        "type": {"type": "string"},
+        "canonicalId": {"type": ["string", "null"]},
+        "origin": {"$ref": "#/$defs/exactOrigin"},
+        "path": {"type": ["string", "null"]},
+        "urlTemplate": {"type": ["string", "null"]},
+        "urlTemplateConfirmed": {"type": "boolean"},
+        "ownerActorId": {"type": ["string", "null"]},
+        "tenantId": {"type": ["string", "null"]},
+        "ownershipBasis": {"enum": ["operator_confirmed", "unresolved"]},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "confirmedByOperator": {"type": "boolean"},
+        "accessPolicy": {"enum": ["owner_only", "shared", "public", "role_restricted", "tenant_restricted", "delegated", "unknown"]},
+        "activeTestingAllowed": {"const": false},
+        "sourceEvidenceRecordIds": {"type": "array", "items": {"type": "string"}},
+        "mutationPointIds": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": ["kind", "recordId"],
+      "properties": {
+        "kind": {"enum": ["capture", "probe", "probeSkipped", "finding"]},
+        "recordId": {"type": "string", "minLength": 1},
+        "captureId": {"type": ["string", "null"]},
+        "captureRecordId": {"type": ["string", "null"]},
+        "captureActorId": {"type": ["string", "null"]},
+        "ownerActorId": {"type": ["string", "null"]},
+        "resourceOwnerActorId": {"type": ["string", "null"]},
+        "resourceRef": {"type": ["string", "null"]},
+        "replayActorId": {"type": ["string", "null"]},
+        "operationSafety": {"$ref": "#/$defs/operationSafety"},
+        "operationSafetyReason": {"type": ["string", "null"], "maxLength": 500},
+        "operationApproved": {"type": "boolean"},
+        "requestFingerprint": {"type": "string"},
+        "evidenceState": {"const": "immutable"},
+        "request": {"type": ["object", "null"]},
+        "response": {"type": ["object", "null"]}
+      }
+    },
+    "mutationPoint": {
+      "type": "object",
+      "required": ["pointId", "captureId", "captureRecordId", "location", "selector", "encoding", "valueType", "mutationSafety", "requiresReview", "replayable"],
+      "properties": {
+        "pointId": {"type": "string", "minLength": 1},
+        "captureId": {"type": "string"},
+        "captureRecordId": {"type": "string"},
+        "location": {"enum": ["path", "query", "header", "form", "json", "graphql", "graphql.variables", "multipart"]},
+        "name": {"type": ["string", "null"]},
+        "selector": {"type": "string", "minLength": 1},
+        "encoding": {"enum": ["raw", "url", "json", "text", "multipart"]},
+        "valueType": {"type": "string"},
+        "originalValue": {"type": ["string", "null"]},
+        "valueHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "schema": {"type": "string"},
+        "mutationSafety": {"$ref": "#/$defs/operationSafety"},
+        "requiresReview": {"type": "boolean"},
+        "replayable": {"type": "boolean"}
+      }
+    },
+    "mutationPlanEntry": {
+      "type": "object",
+      "required": ["planId", "captureId", "pointId", "selector", "requestHash", "operationSafety", "approved", "executable", "requiresReview", "expectedEffect"],
+      "properties": {
+        "planId": {"type": "string", "minLength": 1},
+        "captureId": {"type": "string"},
+        "captureRecordId": {"type": "string"},
+        "pointId": {"type": "string"},
+        "selector": {"type": "string"},
+        "location": {"type": "string"},
+        "requestHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "operationSafety": {"$ref": "#/$defs/operationSafety"},
+        "approved": {"type": "boolean"},
+        "executable": {"type": "boolean"},
+        "requiresReview": {"type": "boolean"},
+        "expectedEffect": {"enum": ["read_only", "unknown"]}
+      }
+    },
+    "requestDependency": {
+      "type": "object",
+      "required": ["dependencyId", "captureId", "fromActorId", "toActorId", "type", "confidence", "requiresFreshIdentity", "maxAgeSeconds"],
+      "properties": {
+        "dependencyId": {"type": "string", "minLength": 1},
+        "captureId": {"type": "string"},
+        "fromActorId": {"type": ["string", "null"]},
+        "toActorId": {"type": ["string", "null"]},
+        "type": {"enum": ["captured_owner_request", "identity_swap"]},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "requiresFreshIdentity": {"const": true},
+        "maxAgeSeconds": {"type": "integer", "minimum": 1}
+      }
+    }
+  }
+}

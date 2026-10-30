@@ -1,0 +1,59 @@
+{
+  "format": "acas-hermes-session-update-1",
+  "schemaVersion": 2,
+  "batchId": "5d755c4c-bac5-48ef-9303-8ddafeceb031",
+  "updateId": "5d755c4c-bac5-48ef-9303-8ddafeceb031",
+  "projectId": "project-existing",
+  "previousBatchId": "export-existing",
+  "mode": "session_update",
+  "createdAt": "2026-10-25T09:17:16.192972300Z",
+  "revisionStreamId": "605201d9-4725-46e7-b11a-a0a91fa6fe9b",
+  "credentialRevision": 2,
+  "objective": "Refresh only this existing actor\u0027s credentials. Keep all captured requests and evidence. Retry only affected failed/pending tests within previously authorized scope; do not rerun completed tests or perform state-changing retries without permission.",
+  "actor": {
+    "actorId": "hermes-user-a",
+    "name": "A",
+    "origin": "https://example.test",
+    "role": null,
+    "roleLevel": 1,
+    "currentAuthenticationHeaders": [
+      [
+        "Cookie",
+        "session_id\u003dA-new; csrf_token\u003dnew"
+      ],
+      [
+        "X-CSRF-Token",
+        "new"
+      ]
+    ],
+    "credentialClassification": {
+      "session": [
+        {
+          "location": "cookie",
+          "name": "session_id",
+          "value": "A-new"
+        }
+      ],
+      "csrf": [
+        {
+          "location": "cookie",
+          "name": "csrf_token",
+          "value": "new"
+        },
+        {
+          "location": "header",
+          "name": "X-CSRF-Token",
+          "value": "new"
+        }
+      ],
+      "context": [],
+      "metadata": []
+    },
+    "identityLookupStatus": "Not checked",
+    "recognisedAccount": null,
+    "sessionStatus": "UNKNOWN"
+  },
+  "applicationMode": "replace_managed_credentials",
+  "verificationNote": "Snapshot of current ACAS status, not a new live validation. Credential revision indicates update ordering, not that the login is valid. Endpoint-bound CSRF/signatures may still need fresh requests.",
+  "retryPolicy": "Only failed/pending tests that used this actor as request identity or require this actor\u0027s refreshed control. Keep resource IDs, URLs and bodies. Remove previous managed credentials before applying new ones. Do not alter other actors or infer authorization from this file."
+}

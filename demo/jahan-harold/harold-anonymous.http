@@ -1,0 +1,14 @@
+GET /api/v1/users/harold/private-profile HTTP/2
+Accept: application/json
+Host: app.example.test
+Referer: https://app.example.test/dashboard
+User-Agent: ACAS-Offline-Demo/1.0
+X-App-Version: 2.4.1
+X-Request-ID: req_harold_001
+
+
+# SIMULATED RESPONSE
+HTTP/2 401 Unauthorized
+Content-Type: application/json
+
+{"error":"authentication_required"}

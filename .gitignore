@@ -1,0 +1,14 @@
+target/
+hardening/m2/
+hardening/tools/
+hardening/tools/apache-maven.zip
+*.class
+*.jar
+*.log
+.env
+.env.*
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
